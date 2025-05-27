@@ -1,9 +1,14 @@
 import React from 'react';
-import { Form as BootstapForm } from 'react-bootstrap';
+import { Form as BootstrapForm, Row, Col } from 'react-bootstrap';
 import { Input, BootstrapInputProps } from './Input';
 
 type ButtonPosition = 'top' | 'bottom';
 type ButtonAlign = 'left' | 'center' | 'right';
+
+type RadioGroup = {
+  groupLabel: string;
+  inputs: BootstrapInputProps[];
+};
 
 type BootstrapFormProps = {
   inputs: BootstrapInputProps[];
@@ -35,15 +40,62 @@ export const Form: React.FC<BootstrapFormProps> = ({ inputs, buttons = [], onSub
     });
   };
 
+  const groupRadioInputs = (inputs: Array<any>): (BootstrapInputProps | RadioGroup)[] => {
+    const result: (BootstrapInputProps | RadioGroup)[] = [];
+    let currentGroup: RadioGroup | null = null;
+
+    inputs.forEach(input => {
+      if (input.type === 'radio') {
+        if (!currentGroup || currentGroup.groupLabel !== input.label) {
+          if (currentGroup) result.push(currentGroup);
+          currentGroup = {
+            groupLabel: input.label || '',
+            inputs: [{ ...input, label: undefined }]
+          };
+        } else {
+          currentGroup.inputs.push({ ...input, label: undefined });
+        }
+      } else {
+        if (currentGroup) {
+          result.push(currentGroup);
+          currentGroup = null;
+        }
+        result.push(input);
+      }
+    });
+
+    if (currentGroup) result.push(currentGroup);
+    return result;
+  };
+
+  const groupedInputs = groupRadioInputs(inputs);
+
   return (
-    <BootstapForm onSubmit={onSubmit}>
+    <BootstrapForm onSubmit={onSubmit}>
       {renderButtonGroup('top')}
 
-      {inputs.map((input, idx) => (
-        <Input key={idx} {...input} />
-      ))}
+      {groupedInputs.map((item, index) => {
+        if ('groupLabel' in item) {
+          return (
+            <div key={`radio-group-${index}`} className="mb-3">
+              <BootstrapForm.Label className="d-block mb-2 fw-bold">
+                {item.groupLabel}
+              </BootstrapForm.Label>
+              <Row className="g-3">
+                {item.inputs.map((input, idx) => (
+                  <Col key={`radio-${index}-${idx}`} xs="auto">
+                    <Input {...input} />
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          );
+        } else {
+          return <Input key={`input-${index}`} {...item} />;
+        }
+      })}
 
       {renderButtonGroup('bottom')}
-    </BootstapForm>
+    </BootstrapForm>
   );
 };

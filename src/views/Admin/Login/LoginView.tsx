@@ -5,7 +5,7 @@ import { faArrowLeftLong, faArrowRightToBracket, faChalkboardUser } from "@forta
 import { ReactBootstrapComponents } from "../../../utils/Bootstrap";
 import { get } from "./LoginModelView";
 import { useGlobal } from "../../../context/GlobalContext";
-import { BootstrapColor, BootstrapColors } from "../../../constants/Colors";
+import { BootstrapColors } from "../../../constants/Colors";
 
 const LoginView = () => {
 
