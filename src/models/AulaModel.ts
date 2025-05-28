@@ -58,7 +58,7 @@ export default class Aula {
        public static async get(id:number): Promise<object>{
         try {
 
-            const response = await api.get('/aula/get');
+            const response = await api.get(`/aula/get?id=${id}`);
             const res = response?.data;
 
             if(res?.success){

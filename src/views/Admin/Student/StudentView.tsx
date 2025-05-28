@@ -12,11 +12,11 @@ import { PieChart } from "../../../utils/ApexCharts";
 
 const StudentView = () => {
 
-    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [submiting, setSubmiting] = useState(false);
 
+    const [searchParams, setSearchParams] = useSearchParams();
     const id = Number(searchParams.get("id"));
     const [nome, setNome] = useState("");
     const [login, setLogin] = useState("");

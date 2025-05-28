@@ -3,11 +3,17 @@ import { faBookOpen } from "@fortawesome/free-solid-svg-icons"
 import { ReactBootstrapComponents } from "../../../utils/Bootstrap"
 import { BootstrapColors } from "../../../constants/Colors"
 
-export const LessonPart = (
+interface LessonPart {
     part: any,
     setPart:(value:any) => void,
-    title: string,
-) => {
+    title: string
+}
+
+export const LessonPart = ({
+    part,
+    setPart,
+    title
+}:LessonPart) => {
     return(
         <ReactBootstrapComponents.Screen title={title}>
             <center style={{margin: 30}}>

@@ -52,7 +52,7 @@ export default class AulaQuestao {
     public static async getAll(id_aula:number): Promise<object> {
         try{
 
-            const response = await api.get(`/getAll?id_aula=${id_aula}`);
+            const response = await api.get(`/aulaQuestao/getAll?id_aula=${id_aula}`);
             const res = response?.data;
             
             if(res?.success){

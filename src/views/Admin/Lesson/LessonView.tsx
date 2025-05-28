@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { ReactBootstrapComponents } from "../../../utils/Bootstrap";
 import { LessonForm } from "./LessonForm";
@@ -6,7 +7,7 @@ import { LessonPart } from "./LessonPart";
 import { LessonQuestionary } from "./LessonQuestionary";
 import { faBook, faBookOpen, faListCheck } from "@fortawesome/free-solid-svg-icons";
 import { BootstrapColors } from "../../../constants/Colors";
-import { post } from "../Student/StudentModelView";
+import { getAll } from "./LessonModelView";
 
 const LessonView = () => {
 
@@ -29,7 +30,7 @@ const LessonView = () => {
     const [questions, setQuestions] = useState<Array<Object>>([
         {
             key: 0,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -41,7 +42,7 @@ const LessonView = () => {
         },
         {
             key: 1,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -53,7 +54,7 @@ const LessonView = () => {
         },
         {
             key: 2,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -65,7 +66,7 @@ const LessonView = () => {
         },
         {
             key: 3,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -77,7 +78,7 @@ const LessonView = () => {
         },
         {
             key: 4,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -89,7 +90,7 @@ const LessonView = () => {
         },
         {
             key: 5,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -101,7 +102,7 @@ const LessonView = () => {
         },
         {
             key: 6,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -113,7 +114,7 @@ const LessonView = () => {
         },
         {
             key: 7,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -125,7 +126,7 @@ const LessonView = () => {
         },
         {
             key: 8,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -137,7 +138,7 @@ const LessonView = () => {
         },
         {
             key: 9,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -149,7 +150,7 @@ const LessonView = () => {
         },
         {
             key: 10,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -161,7 +162,7 @@ const LessonView = () => {
         },
         {
             key: 11,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -173,7 +174,7 @@ const LessonView = () => {
         },
         {
             key: 12,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -185,7 +186,7 @@ const LessonView = () => {
         },
         {
             key: 13,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -197,7 +198,7 @@ const LessonView = () => {
         },
         {
             key: 14,
-            tx_pregunta: '',
+            tx_pergunta: '',
             id_resposta: 0,
             options: {
                 tx_resposta1: '',
@@ -209,6 +210,36 @@ const LessonView = () => {
         },
     ]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [aula, setAula] = useState<any>(null);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const id = Number(searchParams.get("id"))||0;
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if(id){
+                try{
+                    setLoading(true);
+                    const res:any = await getAll(id);
+                    if(res?.success){
+                        const newAula = res?.data?.aula;
+                        setAula(newAula);
+                        setDescription(newAula.getTxDescricao());
+                        setPart1(res?.data?.part1);
+                        setPart2(res?.data?.part2);
+                        setPart3(res?.data?.part3);
+        
+                        setQuestions(res?.data?.questoes);
+                    }
+                }catch(error){
+                    console.error(error);
+                    setLoading(false);
+                }
+            }
+        }
+
+        fetchData().then(() => setLoading(false));
+    },[id]);
 
     if(loading){
         return(
@@ -236,7 +267,7 @@ const LessonView = () => {
                 name={faBook} 
                 color={BootstrapColors.blue300} 
                 size="2x"/>,
-                content: LessonForm(description, setDescription)
+                content: <LessonForm description={description} setDescription={setDescription}/>
             },
             {
                 key: 'part1',
@@ -245,7 +276,7 @@ const LessonView = () => {
                 name={faBookOpen} 
                 color={BootstrapColors.blue300} 
                 size="2x"/>,
-                content: LessonPart(part1, setPart1, 'Parte 1')
+                content: <LessonPart part={part1} setPart={setPart1} title="Parte 1"/>
             },
             {
                 key: 'part2',
@@ -254,7 +285,7 @@ const LessonView = () => {
                 name={faBookOpen} 
                 color={BootstrapColors.blue300} 
                 size="2x"/>,
-                content: LessonPart(part2, setPart2, 'Parte 2')
+                content: <LessonPart part={part2} setPart={setPart2} title="Parte 2"/>
             },
             {
                 key: 'part3',
@@ -263,7 +294,7 @@ const LessonView = () => {
                 name={faBookOpen} 
                 color={BootstrapColors.blue300} 
                 size="2x"/>,
-                content: LessonPart(part3, setPart3, 'Parte 3')
+                content: <LessonPart part={part3} setPart={setPart3} title="Parte 3"/>
             },
             {
                 key: 'questionary',
@@ -272,7 +303,17 @@ const LessonView = () => {
                 name={faListCheck} 
                 color={BootstrapColors.blue300} 
                 size="2x"/>,
-                content: LessonQuestionary(description, part1, part2, part3, questions, setQuestions, post)
+                content: 
+                <LessonQuestionary 
+                description={description}
+                part1={part1}
+                part2={part2}
+                part3={part3}
+                questions={questions}
+                setQuestions={setQuestions}
+                id_questao={id}
+                aula={aula}
+                /> 
             }
         ]}
         defaultActiveKey="form"

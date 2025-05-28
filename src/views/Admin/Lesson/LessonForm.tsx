@@ -1,18 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
-
 import { ReactBootstrapComponents } from "../../../utils/Bootstrap";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 import { BootstrapColors } from "../../../constants/Colors";
+interface LessonFormProps {
+    description: string;
+    setDescription: (value: string) => void;
+}
 
-export const LessonForm = (
-    description:string,
-    setDescription:(values:string) => void
-) => {
-
+export const LessonForm = ({ 
+    description, 
+    setDescription 
+}: LessonFormProps) => {
     const navigate = useNavigate();
 
-    return(
+    return (
         <ReactBootstrapComponents.Screen title="Dados da Aula">
             <ReactBootstrapComponents.Button
                 text="Voltar"

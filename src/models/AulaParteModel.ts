@@ -69,7 +69,7 @@ export default class AulaParte {
                 });
 
                 return {
-                    status: true,
+                    success: true,
                     message: res?.message??'Partes da aula encontradas com sucesso.',
                     data: obj
                 }
