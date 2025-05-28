@@ -211,6 +211,8 @@ const LessonView = () => {
     ]);
     const [loading, setLoading] = useState<boolean>(false);
     const [aula, setAula] = useState<any>(null);
+    const [partes_obj, setPartesObj] = useState<any>(null);
+    const [questoes_obj, setQuestoesObj] = useState<any>(null);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const id = Number(searchParams.get("id"))||0;
@@ -230,6 +232,8 @@ const LessonView = () => {
                         setPart3(res?.data?.part3);
         
                         setQuestions(res?.data?.questoes);
+                        setPartesObj(res?.data?.partes_obj);
+                        setQuestoesObj(res?.data?.questoes_obj);
                     }
                 }catch(error){
                     console.error(error);
@@ -313,6 +317,8 @@ const LessonView = () => {
                 setQuestions={setQuestions}
                 id_questao={id}
                 aula={aula}
+                partes_obj={partes_obj}
+                questoes_obj={questoes_obj}
                 /> 
             }
         ]}

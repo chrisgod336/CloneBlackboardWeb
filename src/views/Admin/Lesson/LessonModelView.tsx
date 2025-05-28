@@ -71,7 +71,9 @@ export const getAll = async (
                                 part1: part1,
                                 part2: part2,
                                 part3: part3,
-                                questoes: questoes 
+                                questoes: questoes ,
+                                partes_obj: parts,
+                                questoes_obj: response_questions?.data
                             }
                         }
                 }else{

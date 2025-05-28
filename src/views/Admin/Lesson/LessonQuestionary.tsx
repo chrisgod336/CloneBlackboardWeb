@@ -18,7 +18,9 @@ interface LessonQuestionary {
     questions:any,
     setQuestions:any,
     id_questao:number,
-    aula:any
+    aula:any,
+    partes_obj:any,
+    questoes_obj:any
 }
 
 export const LessonQuestionary = ({
@@ -29,7 +31,9 @@ export const LessonQuestionary = ({
     questions,
     setQuestions,
     id_questao,
-    aula
+    aula,
+    partes_obj,
+    questoes_obj
 }:LessonQuestionary) => {
 
     const navigate = useNavigate();
@@ -259,6 +263,221 @@ export const LessonQuestionary = ({
         }
     }
 
+        const putAll = async (
+        description:string,
+        part1:any,
+        part2:any,
+        part3:any,
+        questions:Array<any>,
+        aula:Aula,
+        partes_obj:Array<AulaParte>,
+        questoes_obj:Array<AulaQuestao>
+    ) => {
+         try{
+
+            setSubmiting(true);
+
+            if(!description.length){
+                Swal.fire({
+                    title: 'Dados da Aula',
+                    text: 'Campo Nome da Aula é obrigatório!',
+                    icon: 'error',
+                    confirmButtonColor: BootstrapColors.primary
+                });
+                setSubmiting(false);
+                return {
+                    success: false
+                };
+            }
+
+            if(
+                !part1?.tx_texto.length || 
+                !part1?.tx_dir_img.length || 
+                !part1?.tx_url_video.length
+            ){
+                Swal.fire({
+                    title: 'Parte 1',
+                    text: 'Campos Texto, Imagem e Vídeo são obrigatórios!',
+                    icon: 'error',
+                    confirmButtonColor: BootstrapColors.primary
+                });
+                setSubmiting(false);
+                return {
+                    success: false
+                };
+            }
+
+            if(
+                !part2?.tx_texto.length || 
+                !part2?.tx_dir_img.length || 
+                !part2?.tx_url_video.length
+            ){
+                Swal.fire({
+                    title: 'Parte 2',
+                    text: 'Campos Texto, Imagem e Vídeo são obrigatórios!',
+                    icon: 'error',
+                    confirmButtonColor: BootstrapColors.primary
+                });
+                setSubmiting(false);
+                return {
+                    success: false
+                };
+            }
+
+            if(
+                !part3?.tx_texto.length || 
+                !part3?.tx_dir_img.length || 
+                !part3?.tx_url_video.length
+            ){
+                Swal.fire({
+                    title: 'Parte 3',
+                    text: 'Campos Texto, Imagem e Vídeo são obrigatórios!',
+                    icon: 'error',
+                    confirmButtonColor: BootstrapColors.primary
+                });
+                setSubmiting(false);
+                return {
+                    success: false
+                };
+            }
+
+            let error_index:any = -1;
+
+            questions.forEach((element, index) => {
+                if(
+                    !element?.tx_pergunta.length||
+                    !element?.options?.tx_resposta1.length||
+                    !element?.options?.tx_resposta2.length||
+                    !element?.options?.tx_resposta3.length||
+                    !element?.options?.tx_resposta4.length||
+                    !element?.options?.tx_resposta5.length
+                ){
+                  if(error_index === -1){
+                    error_index = index;
+                  }
+                }
+            });
+
+            if(error_index !== -1){
+                  Swal.fire({
+                        title: 'Questão ' + (error_index + 1),
+                        text: 'Campos Pergunta e Respostas são obrigatórios!',
+                        icon: 'error',
+                        confirmButtonColor: BootstrapColors.primary
+                    });
+                    setSubmiting(false);
+                    return {
+                        success: false
+                    };
+            }
+
+            const response_aula:any = await aula.put(
+                description
+            );
+
+            if(response_aula?.success){
+                const id = aula.getId();
+
+                const p1 = partes_obj[0];
+                const response_part1:any = await p1.put(
+                    'Parte 1',
+                    part1?.tx_texto,
+                    part1?.tx_dir_img,
+                    part1?.tx_url_video
+                );
+
+                if(!response_part1?.success){
+                    throw new Error(response_part1?.message??'Erro ao tentar atualizar parte da aula.');
+                }
+
+                const p2 = partes_obj[1];
+                const response_part2:any = await p2.put(
+                    'Parte 2',
+                    part2?.tx_texto,
+                    part2?.tx_dir_img,
+                    part2?.tx_url_video
+                );
+                
+                if(!response_part2?.success){
+                    throw new Error(response_part2?.message??'Erro ao tentar atualizar parte da aula.');
+                }
+
+                const p3 = partes_obj[2];
+                const response_part3:any = await p3.put(
+                    'Parte 3',
+                    part3?.tx_texto,
+                    part3?.tx_dir_img,
+                    part3?.tx_url_video
+                );
+
+                if(!response_part3?.success){
+                    throw new Error(response_part3?.message??'Erro ao tentar atualizar parte da aula.');
+                }
+
+                let j = 0;
+                for(const questao of questions){
+                    let id_parte = 1;
+                    if(j >= 5){
+                        id_parte = 2;
+                    }
+                    if(j >= 10){
+                        id_parte = 3;
+                    }
+
+                    const alternativas = {
+                        0: {label: questao?.options?.tx_resposta1, id:0},
+                        1: {label: questao?.options?.tx_resposta2, id:1},
+                        2: {label: questao?.options?.tx_resposta3, id:2},
+                        3: {label: questao?.options?.tx_resposta4, id:3},
+                        4: {label: questao?.options?.tx_resposta5, id:4}
+                    }
+
+                    const tx_alternativas = JSON.stringify(alternativas);
+
+                    const q = questoes_obj[j];
+                    const res:any = await q.put(
+                        id_parte,
+                        questao?.tx_pergunta,
+                        tx_alternativas,
+                        questao?.id_resposta
+                    );
+
+                    if(!res.success){
+                        throw new Error(res.message??`Erro ao tentar atualizar questão ${j+1} a aula.`);
+                    }
+
+                    j++;
+                }
+
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Aula atualizada com sucesso.',
+                    icon: 'success',
+                    confirmButtonColor: BootstrapColors.primary
+                }).then(() => {
+                    setSubmiting(false);
+                    navigate(`/admin-lesson?id=${id}`);
+                })
+
+            }else{
+                throw new Error(response_aula?.message??'Erro ao tentar atualizar a aula.');
+            }
+
+        }catch(error:any){
+            setSubmiting(false);
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro ao tentar atualizar questão.',
+                icon: 'error',
+                confirmButtonColor: BootstrapColors.primary
+            })
+            console.error(error);
+            return {
+                success: false
+            }
+        }
+    }
+
     const del = async (
         aula:any
     ) => {
@@ -340,7 +559,7 @@ export const LessonQuestionary = ({
                         name={faFloppyDisk}
                         />
                     }
-                    onClick={() => alert('Salvando')}
+                    onClick={() => putAll(description, part1, part2, part3, questions, aula, partes_obj, questoes_obj)}
                     variant="primary"
                 />
                 <ReactBootstrapComponents.Button
