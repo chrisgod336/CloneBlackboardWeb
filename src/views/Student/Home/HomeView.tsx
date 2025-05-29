@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { faDoorOpen, faArrowLeftLong, faUserPlus, faPlus, faFloppyDisk, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faBookOpen, faEye, faCircleCheck, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 
 import { ReactBootstrapComponents } from "../../../utils/Bootstrap";
@@ -13,13 +13,12 @@ import { PieChart } from "../../../utils/ApexCharts";
 
 const HomeView = () => {
 
-    const { state } = useGlobal();
+    const { state, setUser } = useGlobal();
     const aluno:Aluno = state.user as Aluno;
     const [aulas, setAulas] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const { setUser } = useGlobal();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,12 +28,13 @@ const HomeView = () => {
             if(response?.success){
                 setAulas(response?.data);
             }
+
         }
 
         fetchData().then(() => {
             setLoading(false);
         })
-    },[]);
+    },[aluno]);
 
      return(
         <ReactBootstrapComponents.Screen title="Painel do Aluno">
@@ -151,17 +151,75 @@ const HomeView = () => {
                     striped={false}
                     bordered={false}
                     columns={[
-                            {
+                        {
                             label: '',
                             field: 'id',
-                                render: (_, row) => (
-                                    <ReactBootstrapComponents.Button variant="outline-primary" size="sm" onClick={() => navigate('/student-lesson')} text="Visualizar"/>
-                                )
-
+                            render: () => (
+                                <div style={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', height: '50px', width: 10}}>
+                                    <ReactBootstrapComponents.Icon
+                                    name={faBookOpen}
+                                    size="xl"
+                                    color={BootstrapColors.secondary}
+                                    />
+                                </div>
+                            )
                         },
                         {
                             label: '',
-                            field: 'tx_descricao'
+                            field: 'tx_descricao',
+                            render: (element) => (
+                                <div style={{
+                                    display: 'flex', 
+                                    justifyContent: 'flex-start', 
+                                    alignItems: 'center', 
+                                    height: '50px'
+                                }}>
+                                    {element}
+                                </div>
+                            )
+                        },
+                        {
+                            label: '',
+                            field: 'lo_finalizado',
+                            render: (element) => (
+                                 <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: '50px'}}>
+                                    {
+                                        element === 'S' ?
+                                        <ReactBootstrapComponents.Icon
+                                        name={faCircleCheck}
+                                        size="1x"
+                                        color={BootstrapColors.success}
+                                        />
+                                        :
+                                        <ReactBootstrapComponents.Icon
+                                        name={faCircleExclamation}
+                                        size="1x"
+                                        color={BootstrapColors.danger}
+                                        />
+                                    }
+                                    {
+                                        element === 'S' ?
+                                        <b style={{color: BootstrapColors.success, marginLeft: 5}}>Concluída</b>
+                                        :
+                                        <b style={{color: BootstrapColors.danger, marginLeft: 5}}>Pendente</b>
+                                    }
+                                </div>
+                            )
+                        },
+                        {
+                            label: '',
+                            field: 'id',
+                            render: (element) => (
+                                <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: '50px'}}>
+                                    <ReactBootstrapComponents.Button
+                                        icon={
+                                            <ReactBootstrapComponents.Icon name={faEye} size="1x" color={BootstrapColors.primary}/>
+                                        }
+                                        variant="link"
+                                        onClick={() => navigate(`/student-lesson?id=${element}`)}
+                                    />
+                                </div>
+                            ) 
                         }
                     ]}
                 />

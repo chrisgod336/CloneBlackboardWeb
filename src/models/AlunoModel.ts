@@ -388,4 +388,40 @@ export default class Aluno {
             }
         }
     }
+
+    //Retornar com JSON
+    public toJSON(): object {
+        return {
+            id: this.id,
+            tx_nome: this.tx_nome,
+            tx_login: this.tx_login,
+            tx_senha: this.tx_senha,
+            tx_nivel: this.tx_nivel,
+            nu_acertos_texto: this.nu_acertos_texto,
+            nu_erros_texto: this.nu_erros_texto,
+            nu_acertos_imagem: this.nu_acertos_imagem,
+            nu_erros_imagem: this.nu_erros_imagem,
+            nu_acertos_video: this.nu_acertos_video,
+            nu_erros_video: this.nu_erros_video,
+            feedback: this.feedback,
+        };
+    }
+
+    public static fromJSON(json: any): Aluno {
+        return new Aluno(
+            json.id,
+            json.tx_nome,
+            json.tx_login,
+            json.tx_senha,
+            json.tx_nivel,
+            json.nu_acertos_texto,
+            json.nu_erros_texto,
+            json.nu_acertos_imagem,
+            json.nu_erros_imagem,
+            json.nu_acertos_video,
+            json.nu_erros_video,
+            json.feedback
+        );
+    }
+
 }

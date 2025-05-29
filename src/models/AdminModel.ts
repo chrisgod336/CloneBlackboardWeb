@@ -61,4 +61,16 @@ export default class Admin{
             }
         }
     }
+
+    public toJSON(): object {
+        return {
+        id: this.id,
+        tx_login: this.tx_login,
+        tx_senha: this.tx_senha,
+        };
+    }
+
+    public static fromJSON(json: any): Admin {
+        return new Admin(json.id, json.tx_login, json.tx_senha);
+    }
 }
