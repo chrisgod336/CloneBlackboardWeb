@@ -102,7 +102,7 @@ export const LessonQuestionary = ({
 
             if(res?.success && res.data){
 
-                const al:AulaAluno = await res?.data;
+                const al:AulaAluno = await res?.data
 
                   response = await al.put(
                     media < 70 ? 'N' : 'S',
