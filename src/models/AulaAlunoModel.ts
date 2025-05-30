@@ -6,19 +6,28 @@ export default class AulaAluno {
     private lo_finalizado:string;
     private nu_acertos:number;
     private nu_erros:number;
+    private tx_parte1:string;
+    private tx_parte2:string;
+    private tx_parte3:string;
 
     constructor(
         id_aluno:number, 
         id_aula:number, 
         lo_finalizado:string, 
         nu_acertos:number, 
-        nu_erros:number
+        nu_erros:number,
+        tx_parte1:string,
+        tx_parte2:string,
+        tx_parte3:string
     ){
         this.id_aluno = id_aluno;
         this.id_aula = id_aula;
         this.lo_finalizado = lo_finalizado;
         this.nu_acertos = nu_acertos;
         this.nu_erros = nu_erros;
+        this.tx_parte1 = tx_parte1;
+        this.tx_parte2 = tx_parte2;
+        this.tx_parte3 = tx_parte3;
     }
 
     public getIdAluno():number{
@@ -41,6 +50,18 @@ export default class AulaAluno {
         return this.nu_erros;
     }
 
+    public getTxParte1():string{
+        return this.tx_parte1;
+    }
+
+    public getTxParte2():string{
+        return this.tx_parte2;
+    }
+
+    public getTxParte3():string{
+        return this.tx_parte3;
+    }
+
     //buscar aula aluno
     public static async get(
         id_aluno:number, 
@@ -60,7 +81,10 @@ export default class AulaAluno {
                     id_aula,
                     aulaAluno.lo_finalizado,
                     aulaAluno.nu_acertos,
-                    aulaAluno.nu_erros
+                    aulaAluno.nu_erros,
+                    aulaAluno.tx_parte1,
+                    aulaAluno.tx_parte2,
+                    aulaAluno.tx_parte3
                 );
 
                 return {
@@ -85,7 +109,13 @@ export default class AulaAluno {
     //criar aula aluno
     public static async post(
         id_aluno:number, 
-        id_aula:number
+        id_aula:number,
+        lo_finalizado:string,
+        nu_acertos:number,
+        nu_erros:number,
+        tx_parte1:string,
+        tx_parte2:string,
+        tx_parte3:string
     ): Promise<object>{
         try{
 
@@ -93,7 +123,13 @@ export default class AulaAluno {
                 '/aulaAluno/post',
                 {
                     id_aluno: id_aluno,
-                    id_aula: id_aula
+                    id_aula: id_aula,
+                    lo_finalizado: lo_finalizado,
+                    nu_acertos: nu_acertos,
+                    nu_erros: nu_erros,
+                    tx_parte1: tx_parte1,
+                    tx_parte2: tx_parte2,
+                    tx_parte3: tx_parte3
                 }
             );
             const res = response.data;
@@ -103,9 +139,12 @@ export default class AulaAluno {
                 const obj = new AulaAluno(
                     id_aluno,
                     id_aula,
-                    'N',
-                    0,
-                    0
+                    lo_finalizado,
+                    nu_acertos,
+                    nu_erros,
+                    tx_parte1,
+                    tx_parte2,
+                    tx_parte3
                 );
 
                 return {
@@ -130,7 +169,10 @@ export default class AulaAluno {
     public async put(
         lo_finalizado:string, 
         nu_acertos:number, 
-        nu_erros:number
+        nu_erros:number,
+        tx_parte1:string,
+        tx_parte2:string,
+        tx_parte3:string
     ): Promise<object>{
         try {
 
@@ -141,7 +183,10 @@ export default class AulaAluno {
                     id_aula: this.id_aula,
                     lo_finalizado: lo_finalizado,
                     nu_acertos: nu_acertos,
-                    nu_erros: nu_erros
+                    nu_erros: nu_erros,
+                    tx_parte1: tx_parte1,
+                    tx_parte2: tx_parte2,
+                    tx_parte3: tx_parte3
                 }
             );
             const res = response?.data;
@@ -151,6 +196,9 @@ export default class AulaAluno {
                 this.lo_finalizado = lo_finalizado;
                 this.nu_acertos = nu_acertos;
                 this.nu_erros = nu_erros;
+                this.tx_parte1 = tx_parte1;
+                this.tx_parte2 = tx_parte2;
+                this.tx_parte3 = tx_parte3;
 
                 return {
                     success: true,
@@ -166,6 +214,35 @@ export default class AulaAluno {
             return {
                 success: false,
                 message: error?.message??"Erro ao tentar editar aula do aluno."
+            }
+        }
+    }
+
+    //montar aula aluno
+    public static async make(
+        id: number
+    ): Promise<object>{
+        try {
+
+            const response = await api.get(`/aulaAluno/make?id_aluno=${id}`);
+            const res = response?.data;
+
+            if(res?.success){
+
+                return {
+                    success: true,
+                    message: res?.message??'Aula do aluno montada com sucesso.',
+                    data: res?.data
+                }
+            }else{
+                throw new Error(res?.message??'Erro ao tentar montar aula do aluno.');
+            }
+
+        }catch(error:any){
+            console.error(error);
+            return {
+                success: false,
+                message: error?.message??"Erro ao tentar montar aula do aluno."
             }
         }
     }

@@ -151,15 +151,22 @@ export default class AulaAlunoQuestao {
     }
 
     //atualizar questao aula aluno
-    public async put(id_resposta_aluno:number, tx_tipo:string, lo_acerto:string): Promise<object>{
+    public static async put(
+        id_aula: number, 
+        id_aluno: number,
+        id_questao: number,
+        id_resposta_aluno: number, 
+        tx_tipo: string, 
+        lo_acerto: string
+    ): Promise<object>{
         try{
 
             const response = await api.put(
                 'aulaAlunoQuestao/put',
                 {
-                    id_aula: this.id_aula,
-                    id_aluno: this.id_aluno,
-                    id_questao: this.id_questao,
+                    id_aula: id_aula,
+                    id_aluno: id_aluno,
+                    id_questao: id_questao,
                     id_resposta_aluno: id_resposta_aluno,
                     tx_tipo: tx_tipo,
                     lo_acerto: lo_acerto
@@ -168,10 +175,6 @@ export default class AulaAlunoQuestao {
             const res = response?.data;
 
             if(res?.suceess){
-
-                this.id_resposta_aluno = id_resposta_aluno;
-                this.tx_tipo = tx_tipo;
-                this.lo_acerto = lo_acerto;
 
                 return {
                     success: true,

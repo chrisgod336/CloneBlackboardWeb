@@ -216,7 +216,7 @@ const HomeView = () => {
                                             <ReactBootstrapComponents.Icon name={faEye} size="1x" color={BootstrapColors.primary}/>
                                         }
                                         variant="link"
-                                        onClick={() => navigate(`/student-lesson?id=${element}`)}
+                                        onClick={() =>window.open(`/student-lesson?id=${element}`, '_blank')}
                                     />
                                 </div>
                             ) 

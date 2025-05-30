@@ -342,7 +342,6 @@ export default class Aluno {
 
 
             const response = await api.delete(`/aluno/delete?id=${this.id}`);
-            console.log('response: ', response);
             const res = response?.data;
 
 
