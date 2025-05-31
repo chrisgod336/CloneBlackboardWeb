@@ -193,4 +193,33 @@ export default class AulaAlunoQuestao {
             }
         }
     }
+
+    //deletar questoes aula aluno
+    public static async deleteAll(
+        id_aula:number, 
+        id_aluno:number
+    ): Promise<object>{
+        try{
+
+           const response = await api.delete(`/aulaAlunoQuestao/deleteAll?id_aluno=${id_aluno}&id_aula=${id_aula}`);
+           const res = response.data;
+
+            if(res?.success){
+
+                return {
+                    success: true,
+                    message: res?.message??'Questões da aula do aluno deletardas com sucesso.',
+                }
+            }else{
+                throw new Error(res?.message??'Erro ao tentar deltar questões do aluno.');
+            }
+
+        }catch(error:any){
+            console.error(error);
+            return {
+                success: false,
+                message: "Erro ao tentar deltar questões do aluno."
+            }
+        }
+    }
 }

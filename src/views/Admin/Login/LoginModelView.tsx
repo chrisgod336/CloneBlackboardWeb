@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
 import Admin from "../../../models/AdminModel";
-import { BootstrapColor, BootstrapColors } from '../../../constants/Colors';
+import { BootstrapColors } from '../../../constants/Colors';
 
 export const get = async (
     tx_login:string,

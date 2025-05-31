@@ -4,16 +4,20 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ReactBootstrapComponents } from "../../../utils/Bootstrap";
 import { useGlobal } from "../../../context/GlobalContext";
 import { BootstrapColors } from "../../../constants/Colors";
-import { faBook, faBookOpen, faListCheck } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBookOpen, faListCheck, faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
 import Aula from "../../../models/AulaModel";
 import { getAll, get, make } from "./LessonModelView";
 import { LessonPart } from "./LessonPart";
 import { LessonQuestionary } from "./LessonQuestionary";
+import AulaParte from "../../../models/AulaParteModel";
+import AulaAluno from "../../../models/AulaAlunoModel";
+import AulaAlunoQuestao from "../../../models/AulaAlunoQuestaoModel";
 
 const LessonView = () => {
 
     const navigate = useNavigate();
     const [descricao, setDescricao] = useState<string>("");
+    const [loFinalizado, setLoFinalizado] = useState<boolean>(false);
     const [partes, setPartes] = useState <Array<any>>([
         {
             id: 1,
@@ -267,13 +271,12 @@ const LessonView = () => {
             id_resposta_aluno: null
         },
     ]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const id_aula = Number(searchParams.get("id"))||0;
-
-    const { state } = useGlobal();
-    const id_aluno = state?.user?.getId()||0;
+    const id_aula = Number(searchParams.get("id_aula"))||0;
+    const id_aluno = Number(searchParams.get("id_aluno"))||0;
+    const [acertos, setAcertos] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -281,8 +284,8 @@ const LessonView = () => {
 
                 setLoading(true);
 
-                if(!id_aula){
-                    window.close();
+                if(!id_aula || !id_aluno){
+                    navigate(`/student-home?id_aluno=${id_aluno}`);
                     return;
                 }
 
@@ -297,7 +300,7 @@ const LessonView = () => {
                     const part2 = response?.data?.part2;
                     const part3 = response?.data?.part3;
 
-                    const newQuestoes = response?.data?.questoes.map((element:any, index:number) => {
+                    let newQuestoes = response?.data?.questoes.map((element:any, index:number) => {
                         return {
                             id: element?.id,
                             tx_descricao: element?.tx_descricao,
@@ -314,73 +317,80 @@ const LessonView = () => {
                             id_resposta_aluno: questoes[index]?.id_resposta_aluno
                         }
                     });
-                    setQuestoes(newQuestoes);
 
-                    const response2:any = await make(id_aluno);
+                    const res:any = await get(id_aluno, id_aula);
+                    const r:AulaAluno = res?.data;
 
-                    if(response2?.success){
-                        const p = response2?.data;
+                            let p = {
+                                        tx_parte1: 'texto',
+                                        tx_parte2: 'imagem',
+                                        tx_parte3: 'video',
+                                    };
 
-                        const p1 = {
-                            id: 1,
-                            tx_descricao: "Parte 1",
-                            tx_tipo: p?.tx_parte1,
-                            tx_texto: part1?.tx_texto,
-                            tx_dir_img: part1?.tx_dir_img,
-                            tx_url_video: part1?.tx_url_video
-                        };
-                        const p2 = {
-                            id: 2,
-                            tx_descricao: "Parte 2",
-                            tx_tipo: p?.tx_parte2,
-                            tx_texto: part2?.tx_texto,
-                            tx_dir_img: part2?.tx_dir_img,
-                            tx_url_video: part2?.tx_url_video
-                        };
-                        const p3 = {
-                            id: 3,
-                            tx_descricao: "Parte 3",
-                            tx_tipo: p?.tx_parte3,
-                            tx_texto: part3?.tx_texto,
-                            tx_dir_img: part3?.tx_dir_img,
-                            tx_url_video: part3?.tx_url_video
-                        };
+                            if(!r || r?.getLoFinalizado() != 'S'){
+                                const response2:any = await make(id_aluno);
+                                if(response2?.success){
+                                    p = response2?.data;
+                                }
+                            }else{
+                                setLoFinalizado(true);
+                                const studentLesson:AulaAluno = res?.data;
+                                p = {
+                                        tx_parte1: studentLesson?.getTxParte1(),
+                                        tx_parte2: studentLesson?.getTxParte2(),
+                                        tx_parte3: studentLesson?.getTxParte3(),
+                                    };
 
-                        setPartes([
-                            p1, p2, p3
-                        ])
+                                const responseLessonQuestionsStudent:any = await AulaAlunoQuestao.getAll(id_aula, id_aluno);
 
-                    }else{
-                          const p1 = {
-                            id: 1,
-                            tx_descricao: "Parte 1",
-                            tx_tipo: "texto",
-                            tx_texto: part1?.tx_texto,
-                            tx_dir_img: part1?.tx_dir_img,
-                            tx_url_video: part1?.tx_url_video
-                        };
-                        const p2 = {
-                            id: 2,
-                            tx_descricao: "Parte 2",
-                            tx_tipo: "imagem",
-                            tx_texto: part2?.tx_texto,
-                            tx_dir_img: part2?.tx_dir_img,
-                            tx_url_video: part2?.tx_url_video
-                        };
-                        const p3 = {
-                            id: 3,
-                            tx_descricao: "Parte 3",
-                            tx_tipo: "video",
-                            tx_texto: part3?.tx_texto,
-                            tx_dir_img: part3?.tx_dir_img,
-                            tx_url_video: part3?.tx_url_video
-                        };
+                                let countAcertos = 0;
+                                
+                                if(responseLessonQuestionsStudent?.success && responseLessonQuestionsStudent?.data?.length){
+                                    responseLessonQuestionsStudent?.data.forEach((element:AulaAlunoQuestao, index:number) => {
+                                        if(newQuestoes[index]){
+                                            newQuestoes[index].id_resposta_aluno = element.getIdRespostaAluno();
+                                            newQuestoes[index].lo_acerto = element.getLoAcerto();
+                                            if(element.getLoAcerto() == 'S'){
+                                                countAcertos++;
+                                            }
+                                        }
+                                    })
 
-                        setPartes([
-                            p1, p2, p3
-                        ])
-                    }
-                }
+                                    setAcertos(countAcertos);
+                                }
+                            }
+
+                            const p1 = {
+                                id: 1,
+                                tx_descricao: "Parte 1",
+                                tx_tipo: p?.tx_parte1,
+                                tx_texto: part1?.tx_texto,
+                                tx_dir_img: part1?.tx_dir_img,
+                                tx_url_video: part1?.tx_url_video
+                            };
+                            const p2 = {
+                                id: 2,
+                                tx_descricao: "Parte 2",
+                                tx_tipo: p?.tx_parte2,
+                                tx_texto: part2?.tx_texto,
+                                tx_dir_img: part2?.tx_dir_img,
+                                tx_url_video: part2?.tx_url_video
+                            };
+                            const p3 = {
+                                id: 3,
+                                tx_descricao: "Parte 3",
+                                tx_tipo: p?.tx_parte3,
+                                tx_texto: part3?.tx_texto,
+                                tx_dir_img: part3?.tx_dir_img,
+                                tx_url_video: part3?.tx_url_video
+                            };
+
+                            setPartes([
+                                p1, p2, p3
+                            ])
+
+                            setQuestoes(newQuestoes);
+                        }
 
             }catch(error:any){
                 console.error(error);
@@ -391,6 +401,23 @@ const LessonView = () => {
         .then(() => setLoading(false))
         .catch(() => setLoading(false))
     }, [])
+
+    
+    if(loading){
+        return(
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100vh',
+                flexDirection: 'column'
+            }}>
+                <h6>Carregando Dados da Aula...</h6>
+                <ReactBootstrapComponents.Spinner variant="primary" size={"lg"}/>
+            </div>
+        )
+    }
 
      return(
           <ReactBootstrapComponents.TabbedPages
@@ -403,13 +430,25 @@ const LessonView = () => {
                     color={BootstrapColors.blue300} 
                     size="2x"/>,
                     content: (
+                        <>
+                        <ReactBootstrapComponents.Button
+                        text="Voltar"
+                        variant="secondary"
+                        onClick={() => navigate(`/student-home?id_aluno=${id_aluno}`)}
+                        icon = {
+                            <ReactBootstrapComponents.Icon
+                            name={faArrowLeftLong}
+                            />
+                        }
+                        />
+                        <br/><br/>
                         <div style={{
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
                             alignItems: 'center',
                             width: '100%',
-                            height: '90vh',
+                            height: '80vh',
                             backgroundColor: BootstrapColors.primary
                         }}>
                             <ReactBootstrapComponents.Icon
@@ -424,6 +463,7 @@ const LessonView = () => {
                                 {descricao}
                             </h2>
                         </div>
+                        </>
                     )
                 },
                 {
@@ -476,7 +516,7 @@ const LessonView = () => {
                 },
                 {
                     key: 'questionary',
-                    label: 'Questionário',
+                    label: loFinalizado?`Questionário (${acertos}/15)`:'Questionário',
                     icon: <ReactBootstrapComponents.Icon 
                     name={faListCheck} 
                     color={BootstrapColors.blue300} 
@@ -489,6 +529,8 @@ const LessonView = () => {
                     part1={partes[0]}
                     part2={partes[1]}
                     part3={partes[2]}
+                    loFinalizado={loFinalizado}
+                    acertos={acertos}
                     />
                 }
             ]}

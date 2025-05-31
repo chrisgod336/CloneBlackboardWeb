@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { faDoorOpen, faBookOpen, faEye, faCircleCheck, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 
@@ -7,34 +7,62 @@ import { ReactBootstrapComponents } from "../../../utils/Bootstrap";
 import { BootstrapColors } from "../../../constants/Colors";
 import { useGlobal } from "../../../context/GlobalContext";
 import Aluno from "../../../models/AlunoModel";
-import { getAll } from "./HomeModelView";
+import { getAll, get } from "./HomeModelView";
 import { ColorChoiser } from "../../../utils/ProjectLibs/colorChoiser";
 import { PieChart } from "../../../utils/ApexCharts";
 
 const HomeView = () => {
 
-    const { state, setUser } = useGlobal();
-    const aluno:Aluno = state.user as Aluno;
     const [aulas, setAulas] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [aluno, setAluno] = useState<Aluno|undefined>();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const id_aluno = Number(searchParams.get("id_aluno"))||0;
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            const response = await getAll(aluno?.getId());
+
+            if(!id_aluno){
+                navigate("/");
+            }
+
+            const res:any = await get(id_aluno);
+
+            if(res?.success){
+                setAluno(res?.data);
+            }
+
+            const response:any = await getAll(id_aluno);
 
             if(response?.success){
                 setAulas(response?.data);
             }
-
         }
 
         fetchData().then(() => {
             setLoading(false);
         })
-    },[aluno]);
+    },[]);
+
+    
+    if(loading){
+        return(
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100vh',
+                flexDirection: 'column'
+            }}>
+                <h6>Carregando Painel do Aluno...</h6>
+                <ReactBootstrapComponents.Spinner variant="primary" size={"lg"}/>
+            </div>
+        )
+    }
 
      return(
         <ReactBootstrapComponents.Screen title="Painel do Aluno">
@@ -54,7 +82,6 @@ const HomeView = () => {
                     })
                     .then((res) => {
                         if (res.isConfirmed) {
-                            setUser(null);
                             navigate('/');
                         }
                     })
@@ -198,7 +225,7 @@ const HomeView = () => {
                                         />
                                     }
                                     {
-                                        element === 'S' ?
+                                        element == 'S' ?
                                         <b style={{color: BootstrapColors.success, marginLeft: 5}}>Concluída</b>
                                         :
                                         <b style={{color: BootstrapColors.danger, marginLeft: 5}}>Pendente</b>
@@ -216,7 +243,7 @@ const HomeView = () => {
                                             <ReactBootstrapComponents.Icon name={faEye} size="1x" color={BootstrapColors.primary}/>
                                         }
                                         variant="link"
-                                        onClick={() =>window.open(`/student-lesson?id=${element}`, '_blank')}
+                                        onClick={() =>navigate(`/student-lesson?id_aula=${element}&id_aluno=${id_aluno}`)}
                                     />
                                 </div>
                             ) 

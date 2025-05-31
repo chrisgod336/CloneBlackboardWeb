@@ -5,38 +5,6 @@ import Aula from "../../../models/AulaModel";
 import AulaAluno from "../../../models/AulaAlunoModel";
 import { BootstrapColors } from "../../../constants/Colors";
 
-// export const get = async(
-//     id: number
-// ) => {
-//         try{
-
-//         const response:any = await Aluno.get(
-//             id
-//         );
-
-//         if(response.success){
-//             return {
-//                 success: true,
-//                 data: response.data
-//             }
-//         }else{
-//             throw new Error(response.message||'Erro desconhecido.');
-//         }
-
-//     }catch(error:any){
-//         console.error(error);
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Oops',
-//             text: 'Erro ao tentar buscar os dados da sua conta.',
-//             confirmButtonColor: BootstrapColors.primary
-//         });
-//         return {
-//             success: false
-//         }
-//     }
-// }
-
 export const getAll = async(
     id_aluno: number
 ) => {
@@ -46,7 +14,7 @@ export const getAll = async(
 
         if(response.success){
 
-            let alunoAulas = [];
+            let alunoAulas:Array<any> = [];
 
             for(const aula of response.data){
                 const res:any = await AulaAluno.get(id_aluno, aula?.getId());
@@ -63,7 +31,7 @@ export const getAll = async(
 
             return {
                 success: true,
-                data: response.data
+                data: alunoAulas
             }
         }else{
             throw new Error(response.message||'Erro desconhecido.');
@@ -75,6 +43,37 @@ export const getAll = async(
             icon: 'error',
             title: 'Oops',
             text: 'Erro ao tentar buscar as aulas do aluno.',
+            confirmButtonColor: BootstrapColors.primary
+        });
+        return {
+            success: false
+        }
+    }
+}
+
+export const get = async (
+    id_aluno: number,
+) => {
+    try {
+
+        const response:any = await Aluno.get(id_aluno);
+
+        if(response?.success){
+            return {
+                success: true,
+                message: 'Aluno encontrado com sucesso.',
+                data: response.data
+            }
+        }else{
+            throw new Error(response.message??'Erro desconhecido.');
+        }
+
+    }catch(error:any){
+        console.error(error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops',
+            text: 'Erro ao tentar buscar aluno.',
             confirmButtonColor: BootstrapColors.primary
         });
         return {

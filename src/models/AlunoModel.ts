@@ -54,6 +54,10 @@ export default class Aluno {
         return this.tx_login;
     }
 
+    public getTxSenha():string{
+        return this.tx_senha;
+    }
+
     public getTxNivel():string{
         return this.tx_nivel;
     }
@@ -276,15 +280,15 @@ export default class Aluno {
 
     //atualizar aluno
     public async put(
-        tx_nome:string, 
-        tx_login:string, 
-        // tx_nivel:string, 
-        // nu_acertos_texto:number,
-        // nu_erros_texto:number, 
-        // nu_acertos_imagem:number,
-        // nu_erros_imagem:number, 
-        // nu_acertos_video:number,
-        // nu_erros_video:number
+        tx_nome?:string, 
+        tx_login?:string, 
+        tx_nivel?:string, 
+        nu_acertos_texto?:number,
+        nu_erros_texto?:number, 
+        nu_acertos_imagem?:number,
+        nu_erros_imagem?:number, 
+        nu_acertos_video?:number,
+        nu_erros_video?:number,
     ): Promise<object>{
         try{
 
@@ -292,15 +296,15 @@ export default class Aluno {
                 `/aluno/put`,
                 {
                     id: this.id,
-                    tx_nome: tx_nome,
-                    tx_login: tx_login,
-                    // tx_nivel: tx_nivel,
-                    // nu_acertos_texto: nu_acertos_texto,
-                    // nu_erros_texto: nu_erros_texto,
-                    // nu_acertos_imagem: nu_acertos_imagem,
-                    // nu_erros_imagem: nu_erros_imagem,
-                    // nu_acertos_video: nu_acertos_video,
-                    // nu_erros_video: nu_erros_video
+                    tx_nome: tx_nome??this.tx_nome,
+                    tx_login: tx_login??this.tx_login,
+                    tx_nivel: tx_nivel??this.tx_nivel,
+                    nu_acertos_texto: nu_acertos_texto??this.nu_acertos_texto,
+                    nu_erros_texto: nu_erros_texto??this.nu_erros_texto,
+                    nu_acertos_imagem: nu_acertos_imagem??this.nu_acertos_imagem,
+                    nu_erros_imagem: nu_erros_imagem??this.nu_erros_imagem,
+                    nu_acertos_video: nu_acertos_video??this.nu_acertos_video,
+                    nu_erros_video: nu_erros_video??this.nu_erros_video
                 }
             );
 
@@ -308,15 +312,15 @@ export default class Aluno {
 
             if(res?.success){
 
-                this.tx_nome = tx_nome;
-                this.tx_login = tx_login;
-                // this.tx_nivel = tx_nivel;
-                // this.nu_acertos_texto = nu_acertos_texto;
-                // this.nu_erros_texto = nu_erros_texto;
-                // this.nu_acertos_imagem = nu_acertos_imagem;
-                // this.nu_erros_imagem = nu_erros_imagem;
-                // this.nu_acertos_video = nu_acertos_video;
-                // this.nu_erros_video = nu_erros_video;
+                this.tx_nome = tx_nome??this.tx_nome;
+                this.tx_login = tx_login??this.tx_login;
+                this.tx_nivel = tx_nivel??this.tx_nivel;
+                this.nu_acertos_texto = nu_acertos_texto??this.nu_acertos_texto;
+                this.nu_erros_texto = nu_erros_texto??this.nu_erros_texto;
+                this.nu_acertos_imagem = nu_acertos_imagem??this.nu_acertos_imagem;
+                this.nu_erros_imagem = nu_erros_imagem??this.nu_erros_imagem;
+                this.nu_acertos_video = nu_acertos_video??this.nu_acertos_video;
+                this.nu_erros_video = nu_erros_video??this.nu_erros_video;
 
                 return {
                     success: true,
@@ -422,5 +426,46 @@ export default class Aluno {
             json.feedback
         );
     }
+
+    //rebuscar dados do aluno
+    // public async reload(): Promise<object> {
+    //     try{
+
+    //        const response = await api.get(`/aluno/get?id=${this.id}`);
+    //        const res = response?.data;
+
+    //         if(res.success){
+
+    //             const data = res.data;
+
+    //             this.tx_nome = data?.tx_nome;
+    //             this.tx_login = data?.tx_login;
+    //             this.tx_senha = data?.tx_senha;
+    //             this.tx_nivel = data?.tx_nivel;
+    //             this.nu_acertos_texto = data?.nu_acertos_texto;
+    //             this.nu_erros_texto = data?.nu_erros_texto;
+    //             this.nu_acertos_imagem = data?.nu_acertos_imagem;
+    //             this.nu_erros_imagem = data?.nu_erros_imagem;
+    //             this.nu_acertos_video = data?.nu_acertos_video;
+    //             this.nu_erros_video = data?.nu_erros_video;
+    //             this.feedback = data?.feedback;
+
+    //             return {
+    //                 success: true,
+    //                 message: res.message??'Dados do aluno recarregados com sucesso.',
+    //                 data: this
+    //             }
+    //         }else{
+    //             throw new Error(res?.message??'Erro ao tentar recarregar dados do aluno.');
+    //         }
+
+    //     }catch(error:any){
+    //         console.error(error);
+    //         return {
+    //             success: false,
+    //             message: error?.message??"Erro ao tentar recarregar dados do aluno."
+    //         }
+    //     }
+    // }
 
 }

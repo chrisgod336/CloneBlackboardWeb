@@ -82,7 +82,8 @@ const LoginView = () => {
                                         .then((res) => {
                                             if(res.success){
                                                 setUser(res.data);
-                                                navigate('/student-home');
+                                                const id = res.data.id;
+                                                navigate(`/student-home?id_aluno=${id}`);
                                             }
                                         })
                                         .finally(() => setLoading(false));
