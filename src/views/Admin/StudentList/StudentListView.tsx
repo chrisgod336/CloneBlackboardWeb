@@ -80,6 +80,7 @@ const StudentListView = () => {
                             }}>
                                 <ReactBootstrapComponents.Alert 
                                 variant={ColorChoiser.nivelVariant(element)} 
+                                textAlign={'center'}
                                 style={{
                                     margin: 0,
                                     padding: '0.25rem 0.5rem',

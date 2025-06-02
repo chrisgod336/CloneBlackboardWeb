@@ -13,7 +13,7 @@ import { PieChart } from "../../../utils/ApexCharts";
 const StudentView = () => {
 
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [submiting, setSubmiting] = useState(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -229,7 +229,9 @@ const StudentView = () => {
                 <div style={{display: id?'flex':'none'}}>
                     <div style={{width: '50%'}}>
                         <div><b>Nível de aprendizado</b></div>
-                        {aluno&&<ReactBootstrapComponents.Alert text={aluno.getTxNivel().toUpperCase()} variant={ColorChoiser.nivelVariant(aluno.getTxNivel())}/>}
+                        <div style={{width: '30%'}}>
+                        {aluno&&<ReactBootstrapComponents.Alert text={aluno.getTxNivel().toUpperCase()} variant={ColorChoiser.nivelVariant(aluno.getTxNivel())} textAlign={'center'}/>}
+                        </div>
                     </div>
                      <div style={{width: '50%'}}>
                         <div><b>Senha</b></div>

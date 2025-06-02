@@ -6,6 +6,7 @@ import AulaParte from "../../../models/AulaParteModel";
 import AulaQuestao from "../../../models/AulaQuestaoModel";
 import { BootstrapColors } from "../../../constants/Colors";
 import { jsonManipulator } from "../../../utils/ProjectLibs/jsonManipulator";
+import AulaAlunoQuestao from "../../../models/AulaAlunoQuestaoModel";
 
 export const getAll = async (
     id_aula:number
@@ -141,20 +142,45 @@ export const get = async (
 }
 
 export const make = async (
-    id_aluno: number
+    id_aluno: number,
+    id_aula?: number
 ):Promise<object> => {
     try{
 
-        const response:any= await AulaAluno.make(id_aluno);
+        let aulaFeita = false;
 
-        if(response?.success){
-             return {
-                success: true,
-                message: response?.message??'Aula do aluno montada com sucesso.',
-                data: response?.data
+        if(id_aula){
+            const res:any = await AulaAlunoQuestao.getAll(id_aula, id_aluno);
+
+            if(res?.success && res?.data?.length === 15){
+                aulaFeita = true;
+            }
+        }
+
+        if(id_aula && aulaFeita){
+            const response:any= await AulaAluno.make(id_aluno, id_aula);
+
+            if(response?.success){
+                return {
+                    success: true,
+                    message: response?.message??'Aula do aluno montada com sucesso.',
+                    data: response?.data
+                }
+            }else{
+                throw new Error(response?.message??'Erro ao montar aula do aluno.');
             }
         }else{
-            throw new Error(response?.message??'Erro ao montar aula do aluno.');
+            const response:any= await AulaAluno.make(id_aluno);
+
+            if(response?.success){
+                return {
+                    success: true,
+                    message: response?.message??'Aula do aluno montada com sucesso.',
+                    data: response?.data
+                }
+            }else{
+                throw new Error(response?.message??'Erro ao montar aula do aluno.');
+            }
         }
 
        

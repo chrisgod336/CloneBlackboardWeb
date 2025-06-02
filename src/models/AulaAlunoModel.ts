@@ -220,11 +220,12 @@ export default class AulaAluno {
 
     //montar aula aluno
     public static async make(
-        id: number
+        id: number,
+        id_aula?: number
     ): Promise<object>{
         try {
 
-            const response = await api.get(`/aulaAluno/make?id_aluno=${id}`);
+            const response = await (id_aula?api.get(`/aulaAluno/make?id_aluno=${id}&id_aula=${id_aula}`):api.get(`/aulaAluno/make?id_aluno=${id}`));
             const res = response?.data;
 
             if(res?.success){

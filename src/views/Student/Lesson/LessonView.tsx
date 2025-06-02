@@ -281,7 +281,7 @@ const LessonView = () => {
     useEffect(() => {
         const fetchData = async () => {
             try{
-
+                console.log('TESTE')
                 setLoading(true);
 
                 if(!id_aula || !id_aluno){
@@ -328,9 +328,17 @@ const LessonView = () => {
                                     };
 
                             if(!r || r?.getLoFinalizado() != 'S'){
-                                const response2:any = await make(id_aluno);
-                                if(response2?.success){
-                                    p = response2?.data;
+
+                                if(r?.getLoFinalizado()){
+                                    const response2:any = await make(id_aluno, id_aula);
+                                    if(response2?.success){
+                                        p = response2?.data;
+                                    }  
+                                }else{
+                                    const response2:any = await make(id_aluno);
+                                    if(response2?.success){
+                                        p = response2?.data;
+                                    }
                                 }
                             }else{
                                 setLoFinalizado(true);

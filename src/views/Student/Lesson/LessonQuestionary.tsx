@@ -475,7 +475,7 @@ export const LessonQuestionary = ({
                         html: 
                            `<div>
                                 <div>
-                                    Você não alcançou a média mínima! Por favor estude a nova aula que será criada para você e refassa os exercícios.
+                                    Você não alcançou a média mínima! Por favor estude a nova aula que será criada para você e refaça os exercícios.
                                 </div>
                                 <div>
                                     Média: ${mediaFormatada}%

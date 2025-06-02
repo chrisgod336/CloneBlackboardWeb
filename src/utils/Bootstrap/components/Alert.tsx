@@ -4,6 +4,7 @@ import { Alert as BootstrapAlert } from 'react-bootstrap';
 type AlertProps = {
   text: string;
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
+  textAlign?: any;
   className?: string; 
   style?: React.CSSProperties; 
 };
@@ -12,24 +13,36 @@ export const Alert: React.FC<AlertProps> = ({
   text, 
   variant = 'primary', 
   className = '', 
+  textAlign,
   style = {} 
 }) => {
+  const renderTextWithBreaks = () => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <BootstrapAlert 
       variant={variant}
       className={className}
       style={{
         margin: 0,
-        padding: '0.25rem 0.5rem',
         display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        height: '32px',
-        lineHeight: 1,
+        justifyContent: 'center', 
+        minHeight: '32px', 
+        lineHeight: 0.7,
+        width: '100%',
         ...style 
       }}
     >
-      {text}
+      <div style={{textAlign: (textAlign??'left'), width: '100%'}}>
+        {renderTextWithBreaks()}
+      </div>
     </BootstrapAlert>
   );
 };
