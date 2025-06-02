@@ -281,7 +281,6 @@ const LessonView = () => {
     useEffect(() => {
         const fetchData = async () => {
             try{
-                console.log('TESTE')
                 setLoading(true);
 
                 if(!id_aula || !id_aluno){
