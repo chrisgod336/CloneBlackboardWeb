@@ -56,6 +56,27 @@ export const LessonPart = ({
                 ]
             }
             />
+            {
+            part?.tx_dir_img&&
+            <center>
+                <h4>Imagem</h4>
+                <ReactBootstrapComponents.Image
+                src={part?.tx_dir_img}
+                fluid={false}
+                height={400}
+                />
+            </center>
+            }
+            {
+            part?.tx_url_video&&
+            <center>
+                <h4>Vídeo</h4>
+                <ReactBootstrapComponents.Video
+                src={part?.tx_url_video}
+                height={400}
+                />
+            </center>
+            }
         </ReactBootstrapComponents.Screen>
     )
 }

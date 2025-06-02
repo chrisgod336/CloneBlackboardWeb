@@ -17,12 +17,16 @@ export const Alert: React.FC<AlertProps> = ({
   style = {} 
 }) => {
   const renderTextWithBreaks = () => {
-    return text.split('\n').map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        {index < text.split('\n').length - 1 && <br />}
-      </React.Fragment>
-    ));
+    if(text){
+      return text.split('\n').map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          {index < text.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      ));
+    }else{
+      return ''
+    }
   };
 
   return (
